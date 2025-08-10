@@ -1,0 +1,59 @@
+
+
+# main 브랜치에 푸시될 때마다 실행될 워크플로우 이름
+name: Deploy to AWS S3
+
+on:
+  push:
+    branches:
+      - main  # main 브랜치에 push 이벤트가 발생했을 때만 실행
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest  # 워크플로우를 실행할 가상 환경
+
+    steps:
+      # 1. GitHub Repository의 코드를 가상 환경으로 가져옴
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # 2. Node.js 환경 설정 (package.json을 사용하므로 필요)
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18' # 프로젝트에 맞는 Node.js 버전 사용
+
+      # 3. 의존성 설치
+      - name: Install dependencies
+        run: npm install
+
+      # 4. 프로젝트 빌드 (vite build 실행)
+      - name: Build project
+        run: npm run build
+        # 빌드 결과물은 'dist' 폴더에 생성됨
+
+      # 5. AWS 인증 정보 설정 (GitHub Secrets 사용)
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-northeast-2 # S3 버킷이 있는 리전으로 변경
+
+      # 6. 빌드된 파일을 S3 버킷에 업로드/동기화
+      - name: Upload to S3
+        run: |
+          aws s3 sync ./dist s3://${{ secrets.S3_BUCKET_NAME }} --delete
+        # ./dist: 빌드 결과물이 있는 폴더
+        # s3://...: 업로드할 S3 버킷 경로
+        # --delete: S3 버킷에는 있지만 로컬 빌드 결과물에는 없는 파일을 삭제하여 동기화
+
+      # 7. (선택사항) CloudFront 캐시 무효화
+      - name: Invalidate CloudFront cache
+        if: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID != '' }} # CloudFront ID가 설정된 경우에만 실행
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} \
+            --paths "/*"
+        # "/*": 모든 파일의 캐시를 무효화하여 사용자가 즉시 변경사항을 볼 수 있게 함
+
