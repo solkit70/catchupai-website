@@ -29,3 +29,6 @@ dist-ssr
 
 # Ignore downloaded S3 bucket contents
 S3_Buckets/
+
+# Ignore temporary files
+commit_message.txt
