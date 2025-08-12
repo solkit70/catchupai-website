@@ -26,3 +26,6 @@ dist-ssr
 # Ignore old/backup deployment files
 .github/workflows/deploy_gpt.yml
 .github/workflows/deploy_old.yml
+
+# Ignore downloaded S3 bucket contents
+S3_Buckets/
