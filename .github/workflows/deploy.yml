@@ -16,17 +16,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Build project
-        run: npm run build
-
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -36,7 +25,18 @@ jobs:
 
       - name: Upload to S3
         run: |
-          aws s3 sync ./dist s3://${{ secrets.S3_BUCKET_NAME }} --delete
+          aws s3 sync . s3://${{ secrets.S3_BUCKET_NAME }} \
+            --delete \
+            --exclude ".git/*" \
+            --exclude ".github/*" \
+            --exclude "node_modules/*" \
+            --exclude "dist/*" \
+            --exclude "ToDo/*" \
+            --exclude "*.md" \
+            --exclude "vite.config.js" \
+            --exclude "package*.json" \
+            --exclude ".gitignore" \
+            --exclude "index_2025_backup.html"
 
       - name: Invalidate CloudFront cache
         run: |
