@@ -26,7 +26,7 @@
       <nav id="main-nav">
         <ul>
           <li><a href="#projects" class="nav-link">프로젝트</a></li>
-          <li><a href="#seattle" class="nav-link">시애틀 AI</a></li>
+          <li><a href="/ko/projects/seattle-ai.html" class="nav-link">시애틀 AI</a></li>
           <li><a href="#newsletter" class="nav-link">뉴스레터</a></li>
           <li class="lang-switch">
             <a href="/index.html" class="btn btn-sm btn-outline">EN</a>
@@ -125,6 +125,9 @@
         </div>
         <div class="video-container">
           <div class="youtube-placeholder">
+            <iframe width="100%" height="500" src="https://www.youtube.com/embed/rbc-6b0woJU" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+          </div>
+          <div class="youtube-placeholder" style="margin-top: 2rem;">
             <iframe width="100%" height="500" src="https://www.youtube.com/embed/5z3UloBkPso" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
           </div>
         </div>
@@ -151,11 +154,11 @@
         <div class="newsletter-content">
           <h2>뉴스레터 구독</h2>
           <p>최신 AI 학습 전략과 프로젝트 업데이트 소식을 이메일로 받아보세요.</p>
-          <p class="newsletter-coming-soon">🚀 뉴스레터 서비스가 곧 오픈됩니다! 기대해 주세요.</p>
-          <form id="newsletter-form" class="newsletter-form newsletter-form--disabled">
-            <input type="email" placeholder="이메일 주소를 입력하세요" disabled>
-            <button type="submit" class="btn btn-primary" disabled>구독하기</button>
+          <form id="newsletter-form" class="newsletter-form">
+            <input type="email" placeholder="이메일 주소를 입력하세요" required>
+            <button type="submit" class="btn btn-primary">구독하기</button>
           </form>
+          <p id="newsletter-msg" class="newsletter-msg"></p>
         </div>
       </div>
     </section>
@@ -172,7 +175,7 @@
           <h4>탐색</h4>
           <ul>
             <li><a href="#projects">프로젝트</a></li>
-            <li><a href="#seattle">시애틀 AI</a></li>
+            <li><a href="/ko/projects/seattle-ai.html">시애틀 AI</a></li>
             <li><a href="#newsletter">뉴스레터</a></li>
           </ul>
         </div>

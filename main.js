@@ -60,14 +60,53 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 4. Newsletter Handling
+  // 4. Newsletter Handling (Brevo API)
   const newsletterForm = document.getElementById('newsletter-form');
   if (newsletterForm) {
-    newsletterForm.addEventListener('submit', (e) => {
+    newsletterForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const email = newsletterForm.querySelector('input').value;
-      alert(`Success! ${email} has been registered for 2026 updates.`);
-      newsletterForm.reset();
+      const isKorean = document.documentElement.lang === 'ko';
+      const msgEl = document.getElementById('newsletter-msg');
+
+      try {
+        const res = await fetch('https://api.brevo.com/v3/contacts', {
+          method: 'POST',
+          headers: {
+            'accept': 'application/json',
+            'content-type': 'application/json',
+            'api-key': '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'
+          },
+          body: JSON.stringify({
+            email: email,
+            listIds: [4],
+            updateEnabled: true
+          })
+        });
+
+        if (res.ok || res.status === 204) {
+          msgEl.textContent = isKorean
+            ? '구독해 주셔서 감사합니다! 곧 소식을 전해드릴게요.'
+            : 'Thank you for subscribing! We\'ll keep you updated.';
+          msgEl.className = 'newsletter-msg newsletter-msg--success';
+          newsletterForm.reset();
+        } else {
+          const data = await res.json();
+          if (data.code === 'duplicate_parameter') {
+            msgEl.textContent = isKorean
+              ? '이미 구독 중인 이메일입니다.'
+              : 'This email is already subscribed.';
+            msgEl.className = 'newsletter-msg newsletter-msg--info';
+          } else {
+            throw new Error('API error');
+          }
+        }
+      } catch {
+        msgEl.textContent = isKorean
+          ? '오류가 발생했습니다. 잠시 후 다시 시도해 주세요.'
+          : 'Something went wrong. Please try again later.';
+        msgEl.className = 'newsletter-msg newsletter-msg--error';
+      }
     });
   }
 });
