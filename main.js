@@ -1,113 +1,112 @@
 /**
- * CSS Imports
- * Vite will bundle these into a single CSS file.
- */
-import './css/variables.css';
-import './css/main.css';
-import './css/layout.css';
-import './css/animations.css';
-
-/**
- * JavaScript Modules
- * All scripts are combined here to act as a single entry point.
+ * Catch Up AI 2026 - Main JavaScript
  */
 
 document.addEventListener('DOMContentLoaded', () => {
-  // -- From js/main.js --
+  // 1. Header Scroll Effect
   const header = document.getElementById('main-header');
   if (header) {
-    const handleScroll = () => {
-      if (window.scrollY > 50) {
-        header.classList.add('scrolled');
-      } else {
-        header.classList.remove('scrolled');
-      }
-    };
-    window.addEventListener('scroll', handleScroll);
-  }
-
-  const newsletterForm = document.getElementById('newsletter-form');
-  if (newsletterForm) {
-    newsletterForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const emailInput = newsletterForm.querySelector('input[type="email"]');
-      const email = emailInput.value.trim();
-      if (email) {
-        alert(`Thank you for subscribing with ${email}! We'll keep you updated with our latest news.`);
-        emailInput.value = '';
-      }
+    window.addEventListener('scroll', () => {
+      header.classList.toggle('scrolled', window.scrollY > 50);
     });
   }
 
+  // 2. Intersection Observer for Scroll Animations
+  const observerOptions = {
+    threshold: 0.1,
+    rootMargin: '0px 0px -50px 0px'
+  };
+
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('active');
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, observerOptions);
+
+  // Observe all elements with 'reveal' class
+  document.querySelectorAll('.reveal').forEach(el => {
+    revealObserver.observe(el);
+  });
+
+  // Also add reveal to specific legacy components if they don't have it
+  document.querySelectorAll('.project-card, .section-header, .support-card, .newsletter-content').forEach(el => {
+    if (!el.classList.contains('reveal')) {
+      el.classList.add('reveal');
+      revealObserver.observe(el);
+    }
+  });
+
+  // 3. Mobile Menu Toggle
   const mobileMenuBtn = document.getElementById('mobile-menu-btn');
   const mainNav = document.getElementById('main-nav');
   if (mobileMenuBtn && mainNav) {
     mobileMenuBtn.addEventListener('click', () => {
-      mainNav.classList.toggle('open');
-    });
-  }
-
-  const vibeCodingBtn = document.getElementById('vibe-coding-btn');
-  const vibeCodingContainer = document.getElementById('vibe-coding-container');
-  const closeVibeCoding = () => {
-    if (vibeCodingContainer) {
-      vibeCodingContainer.style.display = 'none';
-      document.body.classList.remove('vibe-coding-active');
-    }
-  };
-
-  if (vibeCodingBtn && vibeCodingContainer) {
-    vibeCodingBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      vibeCodingContainer.style.display = 'block';
-      document.body.classList.add('vibe-coding-active');
-      window.scrollTo(0, 0);
-    });
-  }
-
-  // -- From js/navigation.js --
-  const sections = document.querySelectorAll('.section');
-  const navLinks = document.querySelectorAll('.nav-link');
-
-  const updateActiveSection = () => {
-    const hash = window.location.hash || '#home';
-    sections.forEach(section => section.classList.remove('active'));
-    navLinks.forEach(link => link.classList.remove('active'));
-
-    const activeSection = document.querySelector(hash);
-    if (activeSection) {
-      activeSection.classList.add('active');
-      const activeNavLink = document.querySelector(`.nav-link[href="${hash}"]`);
-      if (activeNavLink) activeNavLink.classList.add('active');
-    } else {
-      document.getElementById('home')?.classList.add('active');
-      document.querySelector('.nav-link[href="#home"]')?.classList.add('active');
-    }
-    
-    // If navigating away from a specific app view, ensure vibe coding is closed
-    if(hash === '#home') {
-        closeVibeCoding();
-    }
-  };
-
-  window.addEventListener('hashchange', updateActiveSection);
-  updateActiveSection(); // Initial call
-
-  navLinks.forEach(link => {
-    link.addEventListener('click', () => {
-      if (mainNav && mainNav.classList.contains('open')) {
-        mainNav.classList.remove('open');
+      mainNav.classList.toggle('mobile-open');
+      
+      // Animate hamburger to X
+      const spans = mobileMenuBtn.querySelectorAll('span');
+      if (mainNav.classList.contains('mobile-open')) {
+        spans[0].style.transform = 'rotate(45deg) translate(5px, 5px)';
+        spans[1].style.opacity = '0';
+        spans[2].style.transform = 'rotate(-45deg) translate(7px, -7px)';
+      } else {
+        spans[0].style.transform = 'none';
+        spans[1].style.opacity = '1';
+        spans[2].style.transform = 'none';
       }
-      // The hashchange event will handle the rest
     });
-  });
+  }
 
-  // -- From js/app-loader.js --
-  const backToHomeButtons = document.querySelectorAll('.back-to-home');
-  backToHomeButtons.forEach(button => {
-    button.addEventListener('click', (e) => {
+  // 4. Newsletter Handling (Brevo API)
+  const newsletterForm = document.getElementById('newsletter-form');
+  if (newsletterForm) {
+    newsletterForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      window.location.hash = '#home';
+      const email = newsletterForm.querySelector('input').value;
+      const isKorean = document.documentElement.lang === 'ko';
+      const msgEl = document.getElementById('newsletter-msg');
+
+      try {
+        const res = await fetch('https://api.brevo.com/v3/contacts', {
+          method: 'POST',
+          headers: {
+            'accept': 'application/json',
+            'content-type': 'application/json',
+            'api-key': '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'
+          },
+          body: JSON.stringify({
+            email: email,
+            listIds: [4],
+            updateEnabled: true
+          })
+        });
+
+        if (res.ok || res.status === 204) {
+          msgEl.textContent = isKorean
+            ? '구독해 주셔서 감사합니다! 곧 소식을 전해드릴게요.'
+            : 'Thank you for subscribing! We\'ll keep you updated.';
+          msgEl.className = 'newsletter-msg newsletter-msg--success';
+          newsletterForm.reset();
+        } else {
+          const data = await res.json();
+          if (data.code === 'duplicate_parameter') {
+            msgEl.textContent = isKorean
+              ? '이미 구독 중인 이메일입니다.'
+              : 'This email is already subscribed.';
+            msgEl.className = 'newsletter-msg newsletter-msg--info';
+          } else {
+            throw new Error('API error');
+          }
+        }
+      } catch {
+        msgEl.textContent = isKorean
+          ? '오류가 발생했습니다. 잠시 후 다시 시도해 주세요.'
+          : 'Something went wrong. Please try again later.';
+        msgEl.className = 'newsletter-msg newsletter-msg--error';
+      }
     });
-  });
+  }
 });
