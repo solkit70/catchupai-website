@@ -83,6 +83,7 @@
   --color-project-vibe-guiding: var(--color-accent-600);
   --color-project-ai4pkm: #8B5CF6; /* Purple 600 */
   --color-project-seattle-ai: #4F46E5; /* Indigo 600 */
+  --color-project-ai-in-action: #F97316; /* Orange 500 */
 
   /* Typography */
   --font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif;

@@ -179,6 +179,9 @@ h3 { font-size: var(--font-size-2xl); }
 .seattle-ai { border-top: 4px solid var(--color-project-seattle-ai); }
 .seattle-ai .project-icon { background: var(--color-project-seattle-ai); }
 
+.ai-in-action { border-top: 4px solid var(--color-project-ai-in-action); }
+.ai-in-action .project-icon { background: var(--color-project-ai-in-action); }
+
 .project-link {
   margin-top: auto;
   font-weight: var(--font-weight-bold);
@@ -299,6 +302,7 @@ h3 { font-size: var(--font-size-2xl); }
 .vibe-guiding { --hero-rgb: 234, 88, 12; }
 .ai4pkm { --hero-rgb: 139, 92, 246; }
 .seattle-ai { --hero-rgb: 79, 70, 229; }
+.ai-in-action { --hero-rgb: 249, 115, 22; }
 
 /* Comments Section */
 .comments-section {
